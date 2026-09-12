@@ -2,7 +2,12 @@
 'use strict';
 const menuGroups = [...document.querySelectorAll('.nav-group, .mobile-menu')];
 menuGroups.forEach(group => group.addEventListener('toggle', () => {
-  if (group.open) menuGroups.forEach(other => { if (other !== group) other.open = false; });
+  if (group.open) {
+    group.querySelectorAll('template[data-menu-image]').forEach(template => {
+      template.replaceWith(template.content.cloneNode(true));
+    });
+    menuGroups.forEach(other => { if (other !== group) other.open = false; });
+  }
 }));
 document.addEventListener('click', event => {
   menuGroups.forEach(group => { if (!group.contains(event.target)) group.open = false; });
@@ -39,7 +44,8 @@ if (mainImage) {
   document.querySelectorAll('[data-gallery-thumb]').forEach(thumb => {
     thumb.addEventListener('click', event => {
       event.preventDefault();
-      mainImage.src = thumb.href;
+      mainImage.srcset = thumb.dataset.displaySrcset;
+      mainImage.src = thumb.dataset.displaySrc;
       mainImage.alt = thumb.querySelector('img').alt;
       mainImage.closest('a').href = thumb.href;
       document.querySelectorAll('[data-gallery-thumb]').forEach(t => t.removeAttribute('aria-current'));
